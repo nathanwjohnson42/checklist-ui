@@ -1,36 +1,117 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Task App – Quick Start (MySQL with Docker)
 
-## Getting Started
+A simple task management app built with **Next.js**, **Tailwind CSS**, **Express**, and **Prisma**. Supports creating, editing, completing, and deleting tasks with color tags.
 
-First, run the development server:
+---
+
+## Quick Setup
+
+### 1. Clone the repositories
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/nathanwjohnson42/checklist-api.git
+git clone https://github.com/nathanwjohnson42/checklist-ui.git
+
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 2. Install dependencies
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm install -g pnpm
 
-## Learn More
+# Frontend
+cd checklist-ui
+pnpm install
 
-To learn more about Next.js, take a look at the following resources:
+# Backend
+cd ../checklist-api
+pnpm install
+cd ..
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 3. Setup MySQL using Docker
 
-## Deploy on Vercel
+1. Run MySQL container:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+docker run --name mysql-checklist -e MYSQL_ROOT_PASSWORD=pass123 -p 3306:3306 -d mysql:8
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+2. Verify container is running:
+
+```bash
+docker ps
+```
+
+### 4. Update `.env` in the `server` folder
+
+```env
+DATABASE_URL="mysql://root:password@localhost:3306/checklistdb"
+```
+
+---
+
+### 5. Run Prisma migrations
+
+```bash
+cd checklist-api/
+npx prisma db push
+
+cd ..
+```
+
+This creates the `tasks` table in your Docker MySQL database.
+
+---
+
+### 6. Run the backend
+
+```bash
+cd checklist-api/
+npx ts-node-dev src/server.ts
+```
+
+Express server runs on **http://localhost:4000**
+
+---
+
+### 7. Run the frontend
+
+```bash
+cd ../checklist-ui/
+pnpm dev
+```
+
+Next.js runs on **http://localhost:3000**
+
+---
+
+### 8. Using the App
+
+- Click **Create New Task** → Add title + color  
+- Click **task title** → Edit task  
+- Click **circle** → Mark task complete  
+- Click **trash** → Delete task  
+- Completed tasks show with **#262626 background**, checkmark, and strikethrough title  
+
+---
+
+## Tech Stack
+
+- **Next.js 13** (app directory)  
+- **Tailwind CSS**  
+- **Express API**  
+- **Prisma ORM**  
+- **MySQL (Docker)**  
+
+---
+
+## Notes
+
+- Make sure `.env` is added to `.gitignore` to protect credentials.  
+- Prisma handles all database migrations.  
+- Completed tasks are visually distinct for easier tracking.
